@@ -1,0 +1,369 @@
+---
+title: "Bike Sharing Google Analytics CaseStudy"
+output:
+  word_document: default
+  html_notebook: default
+  pdf_document: default
+---
+
+
+#Case Dtudy : Bike Sharing
+
+##Loading Packages:-
+
+
+```{r}
+library("tidyverse")    #Helps wrangle data
+```
+
+```{r}
+library("lubridate")   #helps wrangle date attributes
+```
+
+```{r}
+library("skimr")       #get summary data
+library("janitor")
+```
+
+```{r}
+library("dplyr")
+```
+
+
+#Step 1 Collect Data
+
+```{r}
+Trips_Apr20 <- read_csv('202004-divvy-tripdata.csv')
+```
+
+```{r}
+Trips_May20 <- read_csv('202005-divvy-tripdata.csv')
+```
+
+```{r}
+Trips_June20 <- read_csv('202006-divvy-tripdata.csv')
+```
+
+```{r}
+Trips_July20 <- read_csv('202007-divvy-tripdata.csv')
+```
+
+```{r}
+Trips_Aug20 <- read_csv('202008-divvy-tripdata.csv')
+```
+
+```{r}
+Trips_Sep20 <- read_csv('202009-divvy-tripdata.csv')
+```
+
+```{r}
+Trips_Oct20 <- read_csv('202010-divvy-tripdata.csv')
+```
+
+```{r}
+Trips_Nov20 <- read_csv('202011-divvy-tripdata.csv')
+```
+
+```{r}
+Trips_Dec20 <- read_csv('202012-divvy-tripdata.csv')
+```
+
+```{r}
+Trips_Jan21 <- read_csv('202101-divvy-tripdata.csv')
+```
+
+```{r}
+Trips_Feb21 <- read_csv('202102-divvy-tripdata.csv')
+```
+
+```{r}
+Trips_March21 <- read_csv('202103-divvy-tripdata.csv')
+```
+
+```{r}
+Trips_Apr21 <- read_csv('202104-divvy-tripdata.csv')
+```
+
+#Step 2 : Wrangle Data And Combine Into A Single File
+
+###Compare columns names of the files. While the names don't have to be in the same order, they DO need to match perfectly ###before we can use a command to join them into one file.
+
+```{r}
+colnames(Trips_Apr20)
+```
+
+
+
+```{r}
+colnames(Trips_May20)
+```
+
+```{r}
+colnames(Trips_June20)
+```
+
+```{r}
+colnames(Trips_July20)
+```
+
+```{r}
+colnames(Trips_Aug20)
+```
+
+```{r}
+colnames(Trips_Sep20)
+```
+
+```{r}
+colnames(Trips_Oct20)
+```
+
+```{r}
+colnames(Trips_Nov20)
+```
+
+```{r}
+colnames(Trips_Dec20)
+```
+
+```{r}
+colnames(Trips_Jan21)
+```
+
+```{r}
+colnames(Trips_Feb21)
+```
+
+```{r}
+colnames(Trips_March21)
+```
+
+```{r}
+colnames(Trips_Apr21)
+```
+
+#Inspect the dataframes and look for inconguencies
+
+```{r}
+str(Trips_Apr20)
+```
+
+```{r}
+str(Trips_May20)
+```
+
+```{r}
+str(Trips_June20)
+```
+
+```{r}
+str(Trips_July20)
+```
+
+```{r}
+str(Trips_Aug20)
+```
+```{r}
+str(Trips_Sep20)
+```
+
+```{r}
+str(Trips_Oct20)
+```
+
+```{r}
+str(Trips_Nov20)
+```
+
+```{r}
+str(Trips_Dec20)
+```
+
+```{r}
+str(Trips_Jan21)
+```
+
+```{r}
+str(Trips_Feb21)
+```
+
+```{r}
+str(Trips_March21)
+```
+
+```{r}
+str(Trips_Apr21)
+```
+
+##We can compare column datatype across all dataframe by using compare_df_cols when we have large dataset, that would be more ##easy 
+
+```{r}
+compare_df_cols(Trips_Apr20,Trips_Apr21,Trips_Aug20,Trips_Dec20,Trips_Feb21,Trips_Jan21,Trips_July20,Trips_June20,Trips_March21,Trips_May20,Trips_Nov20,Trips_Sep20,Trips_Oct20, return = "mismatch")
+```
+
+##Convert end_station_id and start_station_id to character so that they can stack correctly
+
+```{r}
+Trips_Apr20 <- mutate(Trips_Apr20, end_station_id= as.character(end_station_id),start_station_id = as.character(start_station_id))
+
+
+Trips_May20 <- mutate(Trips_May20, end_station_id= as.character(end_station_id),start_station_id = as.character(start_station_id))
+
+Trips_June20 <- mutate(Trips_June20, end_station_id= as.character(end_station_id),start_station_id = as.character(start_station_id))
+
+Trips_July20 <- mutate(Trips_July20, end_station_id= as.character(end_station_id),start_station_id = as.character(start_station_id))
+
+Trips_Aug20 <- mutate(Trips_Aug20, end_station_id= as.character(end_station_id),start_station_id = as.character(start_station_id))
+
+Trips_Sep20 <- mutate(Trips_Sep20, end_station_id= as.character(end_station_id),start_station_id = as.character(start_station_id))
+
+Trips_Oct20 <- mutate(Trips_Oct20, end_station_id= as.character(end_station_id),start_station_id = as.character(start_station_id))
+
+Trips_Nov20 <- mutate(Trips_Nov20, end_station_id= as.character(end_station_id),start_station_id = as.character(start_station_id))
+
+Trips_Dec20 <- mutate(Trips_Dec20, end_station_id= as.character(end_station_id),start_station_id = as.character(start_station_id))
+
+Trips_Jan21 <- mutate(Trips_Jan21, end_station_id= as.character(end_station_id),start_station_id = as.character(start_station_id))
+
+Trips_Feb21 <- mutate(Trips_Feb21, end_station_id= as.character(end_station_id),start_station_id = as.character(start_station_id))
+
+Trips_March21 <- mutate(Trips_March21, end_station_id= as.character(end_station_id),start_station_id = as.character(start_station_id))
+
+Trips_Apr21 <- mutate(Trips_Apr21, end_station_id= as.character(end_station_id),start_station_id = as.character(start_station_id))
+
+```
+
+##Double Check column datatype across all dataframe
+
+```{r}
+compare_df_cols(Trips_Apr20,Trips_Apr21,Trips_Aug20,Trips_Dec20,Trips_Feb21,Trips_Jan21,Trips_July20,Trips_June20,Trips_March21,Trips_May20,Trips_Nov20,Trips_Sep20,Trips_Oct20, return = "mismatch")
+```
+
+##Stack individual data frames into one big data frame
+```{r}
+all_trips <- bind_rows(Trips_Apr20,Trips_Apr21,Trips_Aug20,Trips_Dec20,Trips_Feb21,Trips_Jan21,Trips_July20,Trips_June20,Trips_March21,Trips_May20,Trips_Nov20,Trips_Sep20,Trips_Oct20)
+```
+
+##Remove unused columns
+```{r}
+all_trips <- all_trips %>%
+  select(-c(start_lat,start_lng,end_lat,end_lng))
+```
+
+
+##Rename Columns
+```{r}
+all_trips <- all_trips %>% 
+  rename(trip_id = ride_id
+         ,ride_type = rideable_type
+         ,start_time = started_at
+         ,end_time = ended_at
+         ,from_station_name = start_station_name
+         ,from_station_id = start_station_id
+         ,to_station_name = end_station_name
+         ,to_station_id = end_station_id
+         ,usertype = member_casual
+         )
+```
+
+
+#Step 3 : Clean Up and Add Data to prepare for analysis
+##Inspect the new table that has been created
+
+```{r}
+colnames(all_trips)        #list of all columns of combined data
+```
+
+```{r}
+dim(all_trips)            #Dianmensions of DataFrame
+```
+
+```{r}
+head(all_trips)          #To See First 6 rows of dataframe
+```
+
+```{r}
+str(all_trips)             #To see list of columns and datatypes(numeric, character, etc)
+```
+
+```{r}
+summary(all_trips)             #Statistical summary of data, Manily for numerics
+```
+
+```{r}
+skim(all_trips)           #To get summary of data, check missing data
+```
+
+#Now we will add columns that list the date, month, day, and year of each ride
+##This will allow us to aggregate ride data for each month, day, or year....Before compleating these operations we could only aggregate at ride level
+
+```{r}
+all_trips$date <- as.Date(all_trips$start_time)     #The default format is yyyy-mm-dd
+
+all_trips$month <- format(all_trips$date,"%m")
+
+all_trips$day <- format(all_trips$date,"%d")
+
+all_trips$year <- format(all_trips$date,"%y")
+
+all_trips$day_of_week <- format(as.Date(all_trips$date),"%A")
+```
+
+#Add a "ride_length" calculation to all trips(in seconds)
+```{r}
+all_trips$ride_length <- difftime(all_trips$end_time,all_trips$start_time)
+```
+
+##Convert "ride_length" form factor to numeric so we can run calculation on the data
+```{r}
+is.factor(all_trips$ride_length)
+```
+
+```{r}
+all_trips$ride_length <-as.numeric(as.character(all_trips$ride_length))
+
+is.numeric(all_trips$ride_length)
+```
+
+#Remove Bad Data
+##The Dataframe includes a few hundred entries when bikes were taken out of docks and checked for quality by Divvy or ride_length was negative
+```{r}
+skim(all_trips$ride_length)
+```
+
+```{r}
+all_trips_v2 <- all_trips[!(all_trips$ride_length<0),]
+
+skim(all_trips_v2)
+```
+
+#Step 4 : Conduct Descriptive analysis
+###Descriptive analysis on ride_length(all figures in seconds)
+
+```{r}
+summary(all_trips_v2$ride_length)
+```
+
+#Export to CSV for further analysis
+```{r}
+write.csv(all_trips_v2,"data.csv")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
